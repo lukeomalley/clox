@@ -36,7 +36,7 @@ static InterpretResult run()
 
 	for (;;)
 	{
-#ifdef DEBUG_TRACE_EXECUTION
+#ifdef DEBUG_STACK_TRACE
 		printf("          ");
 		for (Value *slot = vm.stack; slot < vm.stackTop; slot++)
 		{
@@ -45,6 +45,8 @@ static InterpretResult run()
 			printf("]");
 		}
 		printf("\n");
+#endif
+#ifdef DEBUG_TRACE_EXECUTION
 		disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif
 		uint8_t instruction;
@@ -54,6 +56,11 @@ static InterpretResult run()
 		{
 			Value constant = READ_CONSTANT();
 			push(constant);
+			break;
+		}
+		case OP_NEGATE:
+		{
+			push(-pop());
 			break;
 		}
 		case OP_RETURN:

@@ -24,6 +24,8 @@ int main(int argc, const char *argv[])
 	writeChunk(&chunk, OP_CONSTANT, 125);
 	writeChunk(&chunk, constant_3, 125);
 
+	writeChunk(&chunk, OP_NEGATE, 125);
+
 	writeChunk(&chunk, OP_RETURN, 125);
 
 	interpret(&chunk);
