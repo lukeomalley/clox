@@ -27,8 +27,8 @@ int main(int argc, const char *argv[])
 	writeChunk(&chunk, OP_RETURN, 125);
 
 	interpret(&chunk);
-	freeVM();
 
+	freeVM();
 	freeChunk(&chunk);
 	return 0;
 }
