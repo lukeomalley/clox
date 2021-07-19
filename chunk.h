@@ -8,7 +8,11 @@ typedef enum
 {
 	OP_RETURN,
 	OP_CONSTANT,
-	OP_NEGATE
+	OP_NEGATE,
+	OP_ADD,
+	OP_SUBTRACT,
+	OP_MULTIPLY,
+	OP_DIVIDE
 } OpCode;
 
 /** Line stores a run length encoded version of the line numbers for each bytecode instruction */
