@@ -26,6 +26,7 @@ static void repl()
 
 static char *readFile(const char *path)
 {
+	// Open the file
 	FILE *file = fopen(path, "rb");
 	if (file == NULL)
 	{
@@ -33,11 +34,12 @@ static char *readFile(const char *path)
 		exit(74);
 	}
 
-	// Get file length: seek to end of file and then tell how far we are from the start of the file, then rewind to start
+	// Get file length: seek to end of file, tell how far we are from the start of the file, then rewind to start
 	fseek(file, 0L, SEEK_END);
 	size_t fileSize = ftell(file);
 	rewind(file);
 
+	// Allocate buffer to hold the file
 	char *buffer = (char *)malloc(fileSize + 1);
 	if (buffer == NULL)
 	{
@@ -45,6 +47,7 @@ static char *readFile(const char *path)
 		exit(74);
 	}
 
+	// Read the file into the buffer
 	size_t bytesRead = fread(buffer, sizeof(char), fileSize, file);
 	if (bytesRead < fileSize)
 	{
@@ -52,6 +55,7 @@ static char *readFile(const char *path)
 		exit(74);
 	}
 
+	// Add a null termination char at end of file
 	buffer[bytesRead] = '\0';
 	fclose(file);
 	return buffer;
