@@ -4,4 +4,4 @@ compiler and bytecode vm for the lox programming language
 
 ## Progress
 
-15.3 Design Note - Register Based Machines
+16.1.1 Opening the compilation pipeline
