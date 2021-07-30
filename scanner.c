@@ -13,6 +13,7 @@ typedef struct
 
 Scanner scanner;
 
+/* Initialize the scanner to default values. Called before starting to scan a new source. */
 void initScanner(const char *source)
 {
 	scanner.start = source;
@@ -20,17 +21,29 @@ void initScanner(const char *source)
 	scanner.line = 1;
 }
 
+/* isDigit checks if the next character is a digit 0 - 9 */
+static bool isDigit(char c)
+{
+	return c >= '0' && c <= '9';
+}
+
+/* Check if the current character is a string termination character */
 static bool isAtEnd()
 {
 	return *scanner.current == '\0';
 }
 
+/* advance moves the current pointer ahead one and returns the next character in the source */
 static char advance()
 {
 	scanner.current++;
 	return scanner.current[-1];
 }
 
+/*
+ * Attempt to match the next character to the expected if a match is found 
+ * than we increment the current pointer to move onto the next character
+ */
 static bool match(char expected)
 {
 	if (isAtEnd())
@@ -47,11 +60,13 @@ static bool match(char expected)
 	return true;
 }
 
+/* Returns the next character in the source string */
 static char peek()
 {
 	return *scanner.current;
 }
 
+/* Returns the character one after the next character in the source string */
 static char peekNext()
 {
 	if (isAtEnd())
@@ -62,6 +77,7 @@ static char peekNext()
 	return scanner.current[1];
 }
 
+/* makeToken constructs a new token struct given a type */
 static Token makeToken(TokenType type)
 {
 	Token token;
@@ -72,6 +88,7 @@ static Token makeToken(TokenType type)
 	return token;
 }
 
+/* errorToken constructs an error token struct and stores error message within the token */
 static Token errorToken(const char *message)
 {
 	Token token;
@@ -82,6 +99,10 @@ static Token errorToken(const char *message)
 	return token;
 }
 
+/*
+* skipWhitespace consumes all of the next whitespace chatacters in the source
+* string up until the next non whitespace character
+*/
 static void skipWhitespace()
 {
 	for (;;)
@@ -117,6 +138,50 @@ static void skipWhitespace()
 	}
 }
 
+/* number parses the next number literal in the source */
+static Token number()
+{
+	while (isDigit(peek()))
+	{
+		advance();
+	}
+
+	if (peek() == '.' && isDigit(peekNext()))
+	{
+		advance();
+
+		while (isDigit(peek()))
+		{
+			advance();
+		}
+	}
+
+	return makeToken(TOKEN_NUMBER);
+}
+
+/* string parses the next string literal in the source */
+static Token string()
+{
+	while (peek() != '"' && !isAtEnd())
+	{
+		if (peek() == '\n')
+		{
+			scanner.line++;
+		}
+		advance();
+	}
+
+	if (isAtEnd())
+	{
+		return errorToken("Unterminated string.");
+	}
+
+	// "eat" the closing quote
+	advance();
+	return makeToken(TOKEN_STRING);
+}
+
+/* scanToken rethrns the next token in the source string */
 Token scanToken()
 {
 
@@ -129,6 +194,12 @@ Token scanToken()
 	}
 
 	char c = advance();
+
+	if (isDigit(c))
+	{
+		return number();
+	}
+
 	switch (c)
 	{
 	case '(':
@@ -161,6 +232,8 @@ Token scanToken()
 		return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
 	case '>':
 		return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+	case '"':
+		return string();
 	}
 
 	return errorToken("Unexpected character.");
