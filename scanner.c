@@ -28,7 +28,7 @@ static bool isDigit(char c)
 }
 
 /* isAplha checks if the next character is a a aplhabetical or an underscore */
-static bool isAplha(char c)
+static bool isAlpha(char c)
 {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
 }
@@ -268,7 +268,7 @@ static TokenType identifierType()
 /* identifier parses and returns the next identifier/keyword */
 static Token identifier()
 {
-	while (isAplha(peek()) || isDigit(peek()))
+	while (isAlpha(peek()) || isDigit(peek()))
 	{
 		advance();
 	}
@@ -290,7 +290,7 @@ Token scanToken()
 
 	char c = advance();
 
-	if (isAlpla(c))
+	if (isAlpha(c))
 	{
 		return identifier();
 	}

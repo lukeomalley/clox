@@ -19,7 +19,7 @@ void compile(const char *source)
 		}
 		else
 		{
-			print("    | ");
+			printf("    | ");
 		}
 
 		printf("%2d '%.*s'\n", token.type, token.length, token.start);

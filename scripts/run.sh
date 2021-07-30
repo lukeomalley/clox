@@ -1,1 +1,1 @@
-gcc main.c chunk.c debug.c memory.c value.c vm.c -Wall -o ./bin/clox  && chmod +x bin/clox && bin/clox
+gcc main.c chunk.c debug.c memory.c value.c vm.c compiler.c scanner.c -Wall -o ./bin/clox  && chmod +x bin/clox && bin/clox
