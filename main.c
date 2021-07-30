@@ -12,7 +12,7 @@ static void repl()
 
 	for (;;)
 	{
-		printf("> ");
+		printf("clox > ");
 
 		if (!fgets(line, sizeof(line), stdin))
 		{
