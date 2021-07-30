@@ -27,6 +27,12 @@ static bool isDigit(char c)
 	return c >= '0' && c <= '9';
 }
 
+/* isAplha checks if the next character is a a aplhabetical or an underscore */
+static bool isAplha(char c)
+{
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
+}
+
 /* Check if the current character is a string termination character */
 static bool isAtEnd()
 {
@@ -181,7 +187,96 @@ static Token string()
 	return makeToken(TOKEN_STRING);
 }
 
-/* scanToken rethrns the next token in the source string */
+/* 
+* checkKeyword checks if the current token matches a keyword by first 
+* comparing the length and then comparing all the values in the string 
+*/
+static TokenType checkKeyword(int start, int length, const char *rest, TokenType type)
+{
+	if (scanner.current - scanner.start == start + length && memcmp(scanner.start + start, rest, length) == 0)
+	{
+		return type;
+	}
+
+	return TOKEN_IDENTIFIER;
+}
+
+/* 
+* identifierType determines what type of identifier is currently being parsed.
+* Using a trie we can determine if a string is a keyword. 
+* (https://craftinginterpreters.com/scanning-on-demand.html#tries-and-state-machines)
+* This is a simple implementation of a DFA (deterministic finite automaton), or
+* finate state machine which produces the correct keyword/identifier token from
+* a given string.
+*/
+static TokenType identifierType()
+{
+	switch (scanner.start[0])
+	{
+	case 'a':
+		return checkKeyword(1, 2, "nd", TOKEN_AND);
+	case 'c':
+		return checkKeyword(1, 4, "lass", TOKEN_CLASS);
+	case 'e':
+		return checkKeyword(1, 3, "lse", TOKEN_ELSE);
+	case 'f':
+		if (scanner.current - scanner.start > 1)
+		{
+			switch (scanner.start[1])
+			{
+			case 'a':
+				return checkKeyword(2, 3, "lse", TOKEN_FALSE);
+			case 'o':
+				return checkKeyword(2, 1, "r", TOKEN_FOR);
+			case 'u':
+				return checkKeyword(2, 1, "n", TOKEN_FUN);
+			}
+		}
+		break;
+	case 'i':
+		return checkKeyword(1, 1, "f", TOKEN_IF);
+	case 'n':
+		return checkKeyword(1, 2, "il", TOKEN_NIL);
+	case 'o':
+		return checkKeyword(1, 1, "r", TOKEN_OR);
+	case 'p':
+		return checkKeyword(1, 4, "rint", TOKEN_PRINT);
+	case 'r':
+		return checkKeyword(1, 5, "eturn", TOKEN_RETURN);
+	case 's':
+		return checkKeyword(1, 4, "uper", TOKEN_SUPER);
+	case 't':
+		if (scanner.current - scanner.start > 1)
+		{
+			switch (scanner.start[1])
+			{
+			case 'h':
+				return checkKeyword(2, 2, "is", TOKEN_THIS);
+			case 'r':
+				return checkKeyword(2, 2, "ue", TOKEN_TRUE);
+			}
+		}
+	case 'v':
+		return checkKeyword(1, 2, "ar", TOKEN_VAR);
+	case 'w':
+		return checkKeyword(1, 4, "hile", TOKEN_WHILE);
+	}
+
+	return TOKEN_IDENTIFIER;
+}
+
+/* identifier parses and returns the next identifier/keyword */
+static Token identifier()
+{
+	while (isAplha(peek()) || isDigit(peek()))
+	{
+		advance();
+	}
+
+	return makeToken(identifierType());
+}
+
+/* scanToken returns the next token in the source string */
 Token scanToken()
 {
 
@@ -194,6 +289,11 @@ Token scanToken()
 	}
 
 	char c = advance();
+
+	if (isAlpla(c))
+	{
+		return identifier();
+	}
 
 	if (isDigit(c))
 	{
