@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "common.h"
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
 
@@ -102,6 +103,12 @@ static InterpretResult run()
 #undef BINARY_OP
 #undef READ_BYTE
 #undef READ_CONSTANT
+}
+
+InterpretResult interpret(const char *source)
+{
+	compile(source);
+	return INTERPRET_OK;
 }
 
 InterpretResult interpret(Chunk *chunk)
